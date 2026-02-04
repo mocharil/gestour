@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(taskkill:*)",
+      "Bash(Remove-Item -Recurse -Force \"C:\\\\Users\\\\Aril Indra Permana\\\\NOHAND\\\\gazetrack\\\\.next\")",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(Stop-Process -Id 15912 -Force)",
+      "Bash(npm run build:*)"
+    ]
+  }
+}

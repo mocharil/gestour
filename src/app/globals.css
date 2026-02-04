@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --border: #1e1e2e;
+  --accent: #00e5a0;
+  --accent-dim: #00e5a020;
+  --text: #e8e8ef;
+  --text-dim: #6b6b80;
+  --danger: #ff4060;
+  --iris-left: #00b4ff;
+  --iris-right: #ff6b00;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+/* Animation for status dot */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-dot {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Video mirror effect */
+.video-mirror {
+  transform: scaleX(-1);
+}
+
+/* Gaze dot transition */
+.gaze-dot {
+  transition: left 0.08s ease-out, top 0.08s ease-out;
+}
