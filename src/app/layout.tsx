@@ -1,15 +1,18 @@
 import type { Metadata } from 'next';
-import { JetBrains_Mono } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import './globals.css';
 
-const jetbrainsMono = JetBrains_Mono({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-mono',
+  variable: '--font-sans',
 });
 
 export const metadata: Metadata = {
-  title: 'GazeTrack - Eye Gaze Tracker',
-  description: 'Eye gaze tracker berbasis browser menggunakan MediaPipe Face Mesh',
+  title: 'Gestour - Hand Gesture Control',
+  description: 'Control your screen with hand gestures using AI-powered detection',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
@@ -18,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <body className={jetbrainsMono.className}>{children}</body>
+    <html lang="id" className={inter.variable}>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

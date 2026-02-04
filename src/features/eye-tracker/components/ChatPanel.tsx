@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useTrackerStore } from '../store/useTrackerStore';
 import { chatAboutImage } from '../lib/geminiService';
 import { speak, stopSpeaking } from '../lib/voiceService';
+import { Button } from '@/components/ui/Button';
 
 export function ChatPanel() {
   const {
@@ -39,10 +40,8 @@ export function ChatPanel() {
     const question = input.trim();
     setInput('');
 
-    // Add user message
     addChatMessage({ role: 'user', content: question });
 
-    // Get AI response
     setChatLoading(true);
     try {
       const answer = await chatAboutImage(uploadedImage, question, chatMessages);
@@ -54,7 +53,7 @@ export function ChatPanel() {
       } else {
         addChatMessage({ role: 'assistant', content: 'Maaf, saya tidak bisa menjawab pertanyaan itu.' });
       }
-    } catch (error) {
+    } catch {
       addChatMessage({ role: 'assistant', content: 'Terjadi kesalahan. Silakan coba lagi.' });
     } finally {
       setChatLoading(false);
@@ -72,113 +71,142 @@ export function ChatPanel() {
     return (
       <button
         onClick={() => setChatOpen(true)}
-        className="fixed bottom-4 left-4 z-40 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+        className="fixed bottom-4 left-4 z-40 group"
       >
-        <span className="text-xl">💬</span>
-        <span className="font-medium">Tanya AI</span>
+        <div className="relative">
+          {/* Glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-tertiary)] rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
+
+          {/* Button */}
+          <div className="relative flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-tertiary)] rounded-2xl text-white shadow-xl">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            <span className="font-semibold">Tanya AI</span>
+          </div>
+        </div>
       </button>
     );
   }
 
   return (
-    <div className="fixed bottom-4 left-4 z-40 w-96 max-h-[70vh] bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] bg-gradient-to-r from-blue-500/10 to-purple-500/10">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">💬</span>
-          <h3 className="font-bold text-[var(--text)]">Tanya AI</h3>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={clearChat}
-            className="p-1.5 text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--border)] rounded transition-colors"
-            title="Hapus chat"
-          >
-            🗑️
-          </button>
-          <button
-            onClick={() => {
-              stopSpeaking();
-              setChatOpen(false);
-            }}
-            className="p-1.5 text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--border)] rounded transition-colors"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px] max-h-[400px]">
-        {chatMessages.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-4xl mb-3">🤖</p>
-            <p className="text-[var(--text-dim)] mb-4">Tanyakan apapun tentang gambar ini!</p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {quickQuestions.map((q, i) => (
-                <button
-                  key={i}
-                  onClick={() => setInput(q)}
-                  className="px-3 py-1.5 text-xs bg-[var(--bg)] border border-[var(--border)] rounded-full text-[var(--text-dim)] hover:text-[var(--text)] hover:border-[var(--accent)] transition-colors"
-                >
-                  {q}
-                </button>
-              ))}
+    <div className="fixed bottom-4 left-4 z-40 w-96 max-w-[calc(100vw-2rem)] animate-fade-in-up">
+      <div className="glass-card-static flex flex-col max-h-[70vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--glass-border)]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-tertiary)] flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-[var(--text-primary)]">Tanya AI</h3>
+              <p className="text-xs text-[var(--text-tertiary)]">Powered by Gemini</p>
             </div>
           </div>
-        ) : (
-          chatMessages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={clearChat}
+              className="p-2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-bg)] rounded-lg transition-colors"
+              title="Hapus chat"
             >
-              <div
-                className={`max-w-[80%] px-4 py-2 rounded-2xl ${
-                  msg.role === 'user'
-                    ? 'bg-[var(--accent)] text-white rounded-br-md'
-                    : 'bg-[var(--bg)] text-[var(--text)] rounded-bl-md'
-                }`}
-              >
-                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-              </div>
-            </div>
-          ))
-        )}
-        {isChatLoading && (
-          <div className="flex justify-start">
-            <div className="bg-[var(--bg)] px-4 py-2 rounded-2xl rounded-bl-md">
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-[var(--text-dim)] rounded-full animate-bounce" />
-                <div className="w-2 h-2 bg-[var(--text-dim)] rounded-full animate-bounce delay-100" />
-                <div className="w-2 h-2 bg-[var(--text-dim)] rounded-full animate-bounce delay-200" />
-              </div>
-            </div>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+            <button
+              onClick={() => {
+                stopSpeaking();
+                setChatOpen(false);
+              }}
+              className="p-2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-bg)] rounded-lg transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input */}
-      <form onSubmit={handleSubmit} className="p-3 border-t border-[var(--border)]">
-        <div className="flex gap-2">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ketik pertanyaan..."
-            className="flex-1 px-4 py-2 bg-[var(--bg)] border border-[var(--border)] rounded-full text-[var(--text)] placeholder-[var(--text-dim)] focus:outline-none focus:border-[var(--accent)]"
-            disabled={isChatLoading}
-          />
-          <button
-            type="submit"
-            disabled={!input.trim() || isChatLoading}
-            className="px-4 py-2 bg-[var(--accent)] text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--accent)]/90 transition-colors"
-          >
-            ↑
-          </button>
         </div>
-      </form>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-[200px] max-h-[400px]">
+          {chatMessages.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[var(--accent-primary)]/20 to-[var(--accent-tertiary)]/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-[var(--accent-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
+                </svg>
+              </div>
+              <p className="text-[var(--text-secondary)] mb-4">Tanyakan apapun tentang gambar ini!</p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {quickQuestions.map((q, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setInput(q)}
+                    className="px-3 py-1.5 text-xs glass-card-static hover:bg-[var(--glass-bg-hover)] text-[var(--text-secondary)] transition-colors"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            chatMessages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
+              >
+                <div
+                  className={`max-w-[85%] px-4 py-3 rounded-2xl ${
+                    msg.role === 'user'
+                      ? 'bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-tertiary)] text-white rounded-br-md'
+                      : 'glass-card-static text-[var(--text-primary)] rounded-bl-md'
+                  }`}
+                >
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                </div>
+              </div>
+            ))
+          )}
+          {isChatLoading && (
+            <div className="flex justify-start animate-fade-in">
+              <div className="glass-card-static px-4 py-3 rounded-2xl rounded-bl-md">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 bg-[var(--accent-primary)] rounded-full animate-bounce" />
+                  <div className="w-2 h-2 bg-[var(--accent-primary)] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                  <div className="w-2 h-2 bg-[var(--accent-primary)] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input */}
+        <form onSubmit={handleSubmit} className="p-4 border-t border-[var(--glass-border)]">
+          <div className="flex gap-2">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ketik pertanyaan..."
+              className="glass-input flex-1 rounded-xl"
+              disabled={isChatLoading}
+            />
+            <button
+              type="submit"
+              disabled={!input.trim() || isChatLoading}
+              className="w-11 h-11 flex items-center justify-center bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-tertiary)] rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-[var(--accent-primary)]/30 transition-all"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

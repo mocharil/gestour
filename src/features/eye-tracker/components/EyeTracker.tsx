@@ -28,16 +28,15 @@ export function EyeTracker() {
   const [showSettings, setShowSettings] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // Check if first time user
   useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem('handsfree-onboarding-seen');
+    const hasSeenOnboarding = localStorage.getItem('gestour-onboarding-seen');
     if (!hasSeenOnboarding) {
       setShowOnboarding(true);
     }
   }, []);
 
   const handleOnboardingComplete = () => {
-    localStorage.setItem('handsfree-onboarding-seen', 'true');
+    localStorage.setItem('gestour-onboarding-seen', 'true');
     setShowOnboarding(false);
   };
 
@@ -57,7 +56,7 @@ export function EyeTracker() {
   const hasImage = !!uploadedImage;
 
   return (
-    <div className="fixed inset-0 bg-[var(--bg)] flex flex-col">
+    <div className="fixed inset-0 bg-[var(--bg-primary)] flex flex-col">
       {/* Onboarding */}
       {showOnboarding && <OnboardingScreen onComplete={handleOnboardingComplete} />}
 
@@ -65,83 +64,116 @@ export function EyeTracker() {
       <SettingsPanel isOpen={showSettings} onClose={() => setShowSettings(false)} />
 
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-sm z-30">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl">
-            <span className="text-xl">🤖</span>
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-[var(--text)]">HandsFree AI</h1>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] px-2 py-0.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 rounded-full">
-                Gemini 3
-              </span>
-              <span className="text-xs text-[var(--text-dim)]">Accessibility Tool</span>
+      <header className="relative z-30 border-b border-[var(--glass-border)]">
+        <div className="glass-card-static rounded-none border-0 border-b border-[var(--glass-border)]">
+          <div className="flex items-center justify-between px-4 md:px-6 py-3">
+            {/* Logo & Title */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-tertiary)] shadow-lg shadow-[var(--accent-primary)]/25">
+                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-[var(--text-primary)]">Gestour</h1>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-[var(--accent-primary)]/20 to-[var(--accent-tertiary)]/20 text-[var(--accent-primary-light)] font-medium">
+                    Gemini AI
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Stats & Actions */}
+            <div className="flex items-center gap-2 md:gap-3">
+              {/* Stats - Hidden on mobile when no image */}
+              {isActive && (
+                <div className="hidden lg:flex items-center gap-2">
+                  <div className="badge badge-info">
+                    <span className="font-mono">{fps}</span> FPS
+                  </div>
+                  <div className={`badge ${handDetected ? 'badge-success' : 'badge-danger'}`}>
+                    {handDetected ? (
+                      <>
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Tangan Terdeteksi
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Tidak ada tangan
+                      </>
+                    )}
+                  </div>
+                  {gesture !== 'none' && gesture !== 'point' && (
+                    <div className="badge badge-info">
+                      {gesture === 'pinch' && '🤏 Klik'}
+                      {gesture === 'fist' && '✊ Zoom+'}
+                      {gesture === 'open' && '🖐️ Zoom-'}
+                      {gesture === 'peace' && '✌️ Drag'}
+                      {gesture === 'thumbsUp' && '👍 AI'}
+                      {gesture === 'threeFingers' && '🔍 Analisis'}
+                    </div>
+                  )}
+                  {zoom !== 1 && (
+                    <div className="badge">
+                      Zoom: <span className="font-mono">{Math.round(zoom * 100)}%</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <Badge status={status} />
+
+              {/* Settings button */}
+              <button
+                onClick={() => setShowSettings(true)}
+                className="p-2.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-bg)] rounded-xl transition-all"
+                title="Pengaturan"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+
+              {hasImage && zoom !== 1 && (
+                <Button variant="ghost" size="sm" onClick={handleResetZoom}>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <span className="hidden sm:inline">Reset Zoom</span>
+                </Button>
+              )}
+
+              {hasImage && (
+                <Button variant="secondary" size="sm" onClick={handleChangeImage}>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="hidden sm:inline">Ganti Gambar</span>
+                </Button>
+              )}
+
+              {isActive && (
+                <Button variant="danger" size="sm" onClick={handleReset}>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span className="hidden sm:inline">Reset</span>
+                </Button>
+              )}
             </div>
           </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {/* Stats */}
-          {isActive && (
-            <div className="hidden md:flex items-center gap-3 text-sm text-[var(--text-dim)]">
-              <span className="px-2 py-1 bg-[var(--bg)] rounded">
-                FPS: <span className="text-[var(--text)] font-mono">{fps}</span>
-              </span>
-              <span className={`px-2 py-1 rounded ${handDetected ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                {handDetected ? '✓ Tangan Terdeteksi' : '✗ Tidak ada tangan'}
-              </span>
-              {gesture !== 'none' && gesture !== 'point' && (
-                <span className="px-2 py-1 bg-[var(--accent)]/20 text-[var(--accent)] rounded font-medium">
-                  {gesture === 'pinch' && '🤏 Klik'}
-                  {gesture === 'fist' && '✊ Zoom+'}
-                  {gesture === 'open' && '🖐️ Zoom-'}
-                  {gesture === 'peace' && '✌️ Drag'}
-                  {gesture === 'thumbsUp' && '👍 AI'}
-                  {gesture === 'threeFingers' && '🔍 Analisis'}
-                </span>
-              )}
-              {zoom !== 1 && (
-                <span className="px-2 py-1 bg-[var(--bg)] rounded">
-                  Zoom: <span className="font-mono text-[var(--text)]">{Math.round(zoom * 100)}%</span>
-                </span>
-              )}
-            </div>
-          )}
-
-          <Badge status={status} />
-
-          {/* Settings button */}
-          <button
-            onClick={() => setShowSettings(true)}
-            className="p-2 text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--border)] rounded-lg transition-colors"
-            title="Pengaturan"
-          >
-            ⚙️
-          </button>
-
-          {hasImage && zoom !== 1 && (
-            <Button variant="secondary" size="sm" onClick={handleResetZoom}>
-              Reset Zoom
-            </Button>
-          )}
-
-          {hasImage && (
-            <Button variant="secondary" size="sm" onClick={handleChangeImage}>
-              Ganti Gambar
-            </Button>
-          )}
-
-          {isActive && (
-            <Button variant="danger" size="sm" onClick={handleReset}>
-              Reset
-            </Button>
-          )}
         </div>
       </header>
 
       {/* Main content */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative overflow-hidden">
         {!hasImage ? (
           <ImageUploader />
         ) : (

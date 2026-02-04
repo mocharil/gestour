@@ -20,7 +20,6 @@ export function CameraPreview() {
   const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
   const lastPointerPosRef = useRef<{ x: number; y: number }>({ x: 0.5, y: 0.5 });
 
-  // Dwell click refs
   const dwellStartTimeRef = useRef<number>(0);
   const dwellPositionRef = useRef<{ x: number; y: number } | null>(null);
   const [dwellProgress, setDwellProgress] = useState(0);
@@ -28,13 +27,13 @@ export function CameraPreview() {
   const {
     status,
     gesture,
+    fps,
     uploadedImage,
     isDetecting,
     isAnalyzing,
     voiceEnabled,
     dwellClickEnabled,
     dwellClickDelay,
-    pointerSmoothing,
     setStatus,
     setPointer,
     setHandDetected,
@@ -77,23 +76,20 @@ export function CameraPreview() {
       setPinching(currentGesture === 'pinch', pinchResult.distance);
       setHandDetected(true);
 
-      // Get position based on gesture
       let position = getPointerPosition(landmarks);
 
       if (currentGesture === 'peace') {
         position = getPeaceCenter(landmarks);
       }
 
-      // Store pointer position for point gesture (to use for AI detection)
       if (currentGesture === 'point') {
         lastPointerPosRef.current = position;
       }
 
       setPointer(position);
 
-      // DWELL CLICK - Track position stability for tremor-friendly clicking
       if (dwellClickEnabled && currentGesture === 'point') {
-        const dwellThreshold = 0.02; // 2% movement threshold
+        const dwellThreshold = 0.02;
         const now = Date.now();
 
         if (dwellPositionRef.current) {
@@ -102,17 +98,14 @@ export function CameraPreview() {
           const moved = dx > dwellThreshold || dy > dwellThreshold;
 
           if (moved) {
-            // Reset dwell if moved too much
             dwellStartTimeRef.current = now;
             dwellPositionRef.current = position;
             setDwellProgress(0);
           } else {
-            // Calculate progress
             const elapsed = now - dwellStartTimeRef.current;
             const progress = Math.min(elapsed / dwellClickDelay, 1);
             setDwellProgress(progress);
 
-            // Trigger click when dwell complete
             if (elapsed >= dwellClickDelay) {
               registerClick();
               dwellStartTimeRef.current = now;
@@ -128,13 +121,11 @@ export function CameraPreview() {
         dwellPositionRef.current = null;
       }
 
-      // Handle gesture changes
       const gestureChanged = currentGesture !== lastGestureRef.current;
 
       if (gestureChanged) {
         const now = Date.now();
 
-        // PINCH - Click detection (visual only, no AI)
         if (currentGesture === 'pinch') {
           const clickType = registerClick();
           if (clickType === 'double') {
@@ -142,13 +133,11 @@ export function CameraPreview() {
           }
         }
 
-        // THUMBS UP - Trigger AI detection
         if (currentGesture === 'thumbsUp' && uploadedImage && !isDetecting) {
           setIsDetecting(true);
           detectObject(uploadedImage, lastPointerPosRef.current.x, lastPointerPosRef.current.y)
             .then((result) => {
               setDetection(result);
-              // Voice narration
               if (result && voiceEnabled) {
                 speakDetectionResult(result.object, result.description);
               }
@@ -158,7 +147,6 @@ export function CameraPreview() {
             });
         }
 
-        // THREE FINGERS - Trigger full image analysis
         if (currentGesture === 'threeFingers' && uploadedImage && !isAnalyzing) {
           setIsAnalyzing(true);
           analyzeFullImage(uploadedImage)
@@ -170,7 +158,6 @@ export function CameraPreview() {
             });
         }
 
-        // FIST - Zoom In
         if (currentGesture === 'fist') {
           gestureStartTimeRef.current = now;
         }
@@ -178,7 +165,6 @@ export function CameraPreview() {
           zoomIn();
         }
 
-        // OPEN - Zoom Out
         if (currentGesture === 'open') {
           gestureStartTimeRef.current = now;
         }
@@ -186,7 +172,6 @@ export function CameraPreview() {
           zoomOut();
         }
 
-        // PEACE - Start/End Drag
         if (currentGesture === 'peace') {
           dragStartPosRef.current = position;
           startDrag(position);
@@ -199,7 +184,6 @@ export function CameraPreview() {
         lastGestureRef.current = currentGesture;
       }
 
-      // Continue drag if peace gesture
       if (currentGesture === 'peace' && dragStartPosRef.current) {
         updateDrag(position);
       }
@@ -217,8 +201,8 @@ export function CameraPreview() {
       dragStartPosRef.current = null;
     }
 
-    const fps = tickFps();
-    setFps(fps);
+    const fpsValue = tickFps();
+    setFps(fpsValue);
   }, [
     setPointer,
     setHandDetected,
@@ -272,40 +256,43 @@ export function CameraPreview() {
 
   const isLoading = status === 'loading';
 
-  // Gesture display info
-  const gestureInfo: Record<GestureType, { label: string; color: string }> = {
-    none: { label: 'Tidak dikenali', color: 'text-[var(--text-dim)]' },
-    point: { label: '☝️ Point', color: 'text-[var(--text)]' },
-    pinch: { label: '🤏 Klik!', color: 'text-[var(--accent)]' },
-    fist: { label: '✊ Zoom In', color: 'text-blue-400' },
-    open: { label: '🖐️ Zoom Out', color: 'text-yellow-400' },
-    peace: { label: '✌️ Drag', color: 'text-purple-400' },
-    thumbsUp: { label: '👍 Deteksi AI', color: 'text-green-400' },
-    threeFingers: { label: '🔍 Analisis Full', color: 'text-pink-400' },
+  const gestureInfo: Record<GestureType, { label: string; color: string; icon: string }> = {
+    none: { label: 'Tidak dikenali', color: 'text-[var(--text-tertiary)]', icon: '❓' },
+    point: { label: 'Point', color: 'text-[var(--text-primary)]', icon: '☝️' },
+    pinch: { label: 'Klik!', color: 'text-[var(--accent-primary)]', icon: '🤏' },
+    fist: { label: 'Zoom In', color: 'text-[var(--accent-secondary)]', icon: '✊' },
+    open: { label: 'Zoom Out', color: 'text-[var(--accent-warning)]', icon: '🖐️' },
+    peace: { label: 'Drag', color: 'text-[var(--accent-tertiary)]', icon: '✌️' },
+    thumbsUp: { label: 'Deteksi AI', color: 'text-[var(--accent-success)]', icon: '👍' },
+    threeFingers: { label: 'Analisis', color: 'text-pink-400', icon: '🔍' },
   };
 
   const currentGestureInfo = gestureInfo[gesture] || gestureInfo.none;
 
   return (
     <div
-      className={`fixed bottom-4 right-4 z-50 transition-all duration-300 ${
-        minimized ? 'w-16 h-16' : 'w-80 h-60'
+      className={`fixed z-50 transition-all duration-300 ease-out ${
+        minimized
+          ? 'bottom-4 right-4 w-16 h-16'
+          : 'bottom-4 right-4 w-72 h-52'
       }`}
     >
-      <button
-        onClick={() => setMinimized(!minimized)}
-        className="absolute -top-2 -left-2 w-8 h-8 bg-[var(--surface)] border border-[var(--border)] rounded-full flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--text)] hover:bg-[var(--border)] transition-colors z-10"
-      >
-        {minimized ? '↗' : '↙'}
-      </button>
-
-      <div className={`relative w-full h-full bg-[var(--surface)] border-2 border-[var(--border)] rounded-xl overflow-hidden shadow-2xl transition-colors`}>
+      {/* Main container */}
+      <div className={`
+        relative w-full h-full overflow-hidden
+        glass-card-static
+        transition-all duration-300
+        ${status === 'active' ? 'border-[var(--accent-success)]/30' : ''}
+      `}>
+        {/* Video feed */}
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover video-mirror"
           playsInline
           muted
         />
+
+        {/* Canvas overlay for landmarks */}
         <canvas
           ref={canvasRef}
           width={320}
@@ -313,53 +300,121 @@ export function CameraPreview() {
           className="absolute inset-0 w-full h-full video-mirror"
         />
 
+        {/* Loading state */}
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg)]/90">
-            <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[var(--bg-primary)]/90 backdrop-blur-sm">
+            <div className="relative mb-3">
+              <div className="w-10 h-10 rounded-full border-2 border-[var(--accent-primary)]/30" />
+              <div className="absolute inset-0 w-10 h-10 rounded-full border-2 border-[var(--accent-primary)] border-t-transparent animate-spin" />
+            </div>
+            <p className="text-xs text-[var(--text-secondary)]">Memuat kamera...</p>
           </div>
         )}
 
+        {/* Minimized state overlay */}
+        {minimized && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg-primary)]/60 backdrop-blur-sm">
+            <span className="text-2xl">{currentGestureInfo.icon}</span>
+          </div>
+        )}
+
+        {/* Top bar - gesture info */}
         {!minimized && (
-          <div className={`absolute top-2 left-2 px-2 py-1 bg-[var(--bg)]/80 rounded text-sm font-medium ${currentGestureInfo.color}`}>
-            {currentGestureInfo.label}
+          <div className="absolute top-2 left-2 right-2 flex items-center justify-between">
+            <div className={`
+              px-2.5 py-1 rounded-lg text-xs font-medium
+              bg-[var(--bg-primary)]/80 backdrop-blur-sm
+              ${currentGestureInfo.color}
+            `}>
+              <span className="mr-1.5">{currentGestureInfo.icon}</span>
+              {currentGestureInfo.label}
+            </div>
+
+            {/* FPS indicator */}
+            <div className="px-2 py-1 rounded-lg text-[10px] font-medium bg-[var(--bg-primary)]/80 backdrop-blur-sm text-[var(--text-tertiary)]">
+              {fps} FPS
+            </div>
           </div>
         )}
 
         {/* Dwell progress indicator */}
         {!minimized && dwellClickEnabled && dwellProgress > 0 && (
-          <div className="absolute top-2 right-2 w-8 h-8">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-              <circle
-                cx="18"
-                cy="18"
-                r="16"
-                fill="none"
-                stroke="var(--border)"
-                strokeWidth="3"
-              />
-              <circle
-                cx="18"
-                cy="18"
-                r="16"
-                fill="none"
-                stroke="var(--accent)"
-                strokeWidth="3"
-                strokeDasharray={`${dwellProgress * 100} 100`}
-                strokeLinecap="round"
-              />
-            </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-xs text-[var(--accent)]">
-              {Math.round(dwellProgress * 100)}%
-            </span>
+          <div className="absolute top-12 right-2">
+            <div className="relative w-10 h-10">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="14"
+                  fill="none"
+                  stroke="var(--glass-border)"
+                  strokeWidth="3"
+                />
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="14"
+                  fill="none"
+                  stroke="var(--accent-primary)"
+                  strokeWidth="3"
+                  strokeDasharray={`${dwellProgress * 88} 88`}
+                  strokeLinecap="round"
+                  className="transition-all duration-100"
+                />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[var(--accent-primary)]">
+                {Math.round(dwellProgress * 100)}%
+              </span>
+            </div>
           </div>
         )}
 
+        {/* Bottom bar - status */}
         {!minimized && (
-          <div className="absolute bottom-2 left-2 px-2 py-1 bg-[var(--bg)]/80 rounded text-xs text-[var(--text-dim)]">
-            Kamera
+          <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[var(--bg-primary)]/80 backdrop-blur-sm">
+              <span className={`relative flex h-2 w-2 ${status === 'active' ? '' : 'opacity-50'}`}>
+                {status === 'active' && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--accent-success)] opacity-75" />
+                )}
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                  status === 'active' ? 'bg-[var(--accent-success)]' :
+                  status === 'loading' ? 'bg-[var(--accent-warning)]' :
+                  'bg-[var(--text-tertiary)]'
+                }`} />
+              </span>
+              <span className="text-[10px] text-[var(--text-secondary)]">
+                {status === 'active' ? 'Kamera aktif' :
+                 status === 'loading' ? 'Memuat...' : 'Tidak aktif'}
+              </span>
+            </div>
           </div>
         )}
       </div>
+
+      {/* Toggle button */}
+      <button
+        onClick={() => setMinimized(!minimized)}
+        className={`
+          absolute -top-2 -left-2 w-7 h-7
+          flex items-center justify-center
+          glass-card-static rounded-full
+          text-[var(--text-secondary)] hover:text-[var(--text-primary)]
+          hover:bg-[var(--glass-bg-hover)]
+          transition-all duration-200
+          z-10
+        `}
+      >
+        {minimized ? (
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+        ) : (
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+          </svg>
+        )}
+      </button>
     </div>
   );
 }
