@@ -6,10 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { useTrackerStore } from '../store/useTrackerStore';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { ImageUploader } from './ImageUploader';
-import { ImageDisplay } from './ImageDisplay';
 import { CameraPreview } from './CameraPreview';
-import { ChatPanel } from './ChatPanel';
-import { FullAnalysisPanel } from './FullAnalysisPanel';
 import { SettingsPanel } from './SettingsPanel';
 import { OnboardingScreen } from './OnboardingScreen';
 import { View360Panel } from './View360Panel';
@@ -197,10 +194,47 @@ export function EyeTracker() {
           <ImageUploader />
         ) : (
           <>
-            <ImageDisplay />
+            {/* Simple Image Display for 360° mode */}
+            <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg-primary)]">
+              <div className="relative">
+                <img
+                  src={uploadedImage}
+                  alt="Uploaded"
+                  className="max-w-[90vw] max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                />
+
+                {/* 360° Generate Button Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg opacity-0 hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => set360ViewOpen(true)}
+                    className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl font-bold text-lg shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 transition-all flex items-center gap-3"
+                  >
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Generate 360° View
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Floating 360 Button */}
+            <button
+              onClick={() => set360ViewOpen(true)}
+              className="fixed bottom-6 right-6 z-40 group"
+            >
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-lg opacity-75 group-hover:opacity-100 transition-opacity animate-pulse" />
+                <div className="relative flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl text-white shadow-xl">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span className="font-bold">360° View</span>
+                </div>
+              </div>
+            </button>
+
             <CameraPreview />
-            <ChatPanel />
-            <FullAnalysisPanel />
           </>
         )}
       </div>

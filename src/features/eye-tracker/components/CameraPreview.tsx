@@ -6,8 +6,6 @@ import { useMediaPipe } from '../hooks/useMediaPipe';
 import { useFpsCounter } from '../hooks/useFpsCounter';
 import { drawHandLandmarks } from '../lib/drawing';
 import { detectGesture, detectPinch, getPointerPosition, getPeaceCenter } from '../lib/gestures';
-import { detectObject, analyzeFullImage } from '../lib/geminiService';
-import { speakDetectionResult } from '../lib/voiceService';
 import type { HandsResults, GestureType } from '../lib/types';
 
 export function CameraPreview() {
@@ -16,9 +14,7 @@ export function CameraPreview() {
   const [minimized, setMinimized] = useState(false);
 
   const lastGestureRef = useRef<GestureType>('none');
-  const gestureStartTimeRef = useRef<number>(0);
   const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
-  const lastPointerPosRef = useRef<{ x: number; y: number }>({ x: 0.5, y: 0.5 });
 
   const dwellStartTimeRef = useRef<number>(0);
   const dwellPositionRef = useRef<{ x: number; y: number } | null>(null);
@@ -28,10 +24,6 @@ export function CameraPreview() {
     status,
     gesture,
     fps,
-    uploadedImage,
-    isDetecting,
-    isAnalyzing,
-    voiceEnabled,
     dwellClickEnabled,
     dwellClickDelay,
     setStatus,
@@ -42,15 +34,9 @@ export function CameraPreview() {
     setGesture,
     setPinching,
     registerClick,
-    zoomIn,
-    zoomOut,
     startDrag,
     updateDrag,
     endDrag,
-    setDetection,
-    setIsDetecting,
-    setFullAnalysis,
-    setIsAnalyzing,
   } = useTrackerStore();
 
   const { tick: tickFps } = useFpsCounter();
@@ -80,10 +66,6 @@ export function CameraPreview() {
 
       if (currentGesture === 'peace') {
         position = getPeaceCenter(landmarks);
-      }
-
-      if (currentGesture === 'point') {
-        lastPointerPosRef.current = position;
       }
 
       setPointer(position);
@@ -124,54 +106,11 @@ export function CameraPreview() {
       const gestureChanged = currentGesture !== lastGestureRef.current;
 
       if (gestureChanged) {
-        const now = Date.now();
-
         if (currentGesture === 'pinch') {
-          const clickType = registerClick();
-          if (clickType === 'double') {
-            zoomIn();
-          }
+          registerClick();
         }
 
-        if (currentGesture === 'thumbsUp' && uploadedImage && !isDetecting) {
-          setIsDetecting(true);
-          detectObject(uploadedImage, lastPointerPosRef.current.x, lastPointerPosRef.current.y)
-            .then((result) => {
-              setDetection(result);
-              if (result && voiceEnabled) {
-                speakDetectionResult(result.object, result.description);
-              }
-            })
-            .finally(() => {
-              setIsDetecting(false);
-            });
-        }
-
-        if (currentGesture === 'threeFingers' && uploadedImage && !isAnalyzing) {
-          setIsAnalyzing(true);
-          analyzeFullImage(uploadedImage)
-            .then((result) => {
-              setFullAnalysis(result);
-            })
-            .finally(() => {
-              setIsAnalyzing(false);
-            });
-        }
-
-        if (currentGesture === 'fist') {
-          gestureStartTimeRef.current = now;
-        }
-        if (lastGestureRef.current === 'fist' && now - gestureStartTimeRef.current > 200) {
-          zoomIn();
-        }
-
-        if (currentGesture === 'open') {
-          gestureStartTimeRef.current = now;
-        }
-        if (lastGestureRef.current === 'open' && now - gestureStartTimeRef.current > 200) {
-          zoomOut();
-        }
-
+        // Peace gesture for 360° rotation drag
         if (currentGesture === 'peace') {
           dragStartPosRef.current = position;
           startDrag(position);
@@ -211,21 +150,11 @@ export function CameraPreview() {
     setGesture,
     setPinching,
     registerClick,
-    zoomIn,
-    zoomOut,
     startDrag,
     updateDrag,
     endDrag,
     dwellClickEnabled,
     dwellClickDelay,
-    uploadedImage,
-    isDetecting,
-    isAnalyzing,
-    voiceEnabled,
-    setDetection,
-    setIsDetecting,
-    setFullAnalysis,
-    setIsAnalyzing,
   ]);
 
   const handleStatusChange = useCallback((newStatus: typeof status) => {
@@ -257,14 +186,14 @@ export function CameraPreview() {
   const isLoading = status === 'loading';
 
   const gestureInfo: Record<GestureType, { label: string; color: string; icon: string }> = {
-    none: { label: 'Not recognized', color: 'text-[var(--text-tertiary)]', icon: '❓' },
+    none: { label: 'Show hand', color: 'text-[var(--text-tertiary)]', icon: '👋' },
     point: { label: 'Point', color: 'text-[var(--text-primary)]', icon: '☝️' },
-    pinch: { label: 'Click!', color: 'text-[var(--accent-primary)]', icon: '🤏' },
-    fist: { label: 'Zoom In', color: 'text-[var(--accent-secondary)]', icon: '✊' },
-    open: { label: 'Zoom Out', color: 'text-[var(--accent-warning)]', icon: '🖐️' },
-    peace: { label: 'Drag', color: 'text-[var(--accent-tertiary)]', icon: '✌️' },
-    thumbsUp: { label: 'AI Detect', color: 'text-[var(--accent-success)]', icon: '👍' },
-    threeFingers: { label: 'Analyze', color: 'text-pink-400', icon: '🔍' },
+    pinch: { label: 'Select', color: 'text-[var(--accent-primary)]', icon: '🤏' },
+    fist: { label: 'Fist', color: 'text-[var(--accent-secondary)]', icon: '✊' },
+    open: { label: 'Open', color: 'text-[var(--accent-warning)]', icon: '🖐️' },
+    peace: { label: 'Rotate 360°', color: 'text-purple-400', icon: '✌️' },
+    thumbsUp: { label: 'Thumbs Up', color: 'text-[var(--accent-success)]', icon: '👍' },
+    threeFingers: { label: '3 Fingers', color: 'text-pink-400', icon: '🤟' },
   };
 
   const currentGestureInfo = gestureInfo[gesture] || gestureInfo.none;
