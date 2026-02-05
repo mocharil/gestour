@@ -12,6 +12,7 @@ import { ChatPanel } from './ChatPanel';
 import { FullAnalysisPanel } from './FullAnalysisPanel';
 import { SettingsPanel } from './SettingsPanel';
 import { OnboardingScreen } from './OnboardingScreen';
+import { View360Panel } from './View360Panel';
 
 export function EyeTracker() {
   const {
@@ -21,9 +22,11 @@ export function EyeTracker() {
     uploadedImage,
     gesture,
     zoom,
+    is360ViewOpen,
     setUploadedImage,
     resetTransform,
     reset,
+    set360ViewOpen,
   } = useTrackerStore();
 
   const [showSettings, setShowSettings] = useState(false);
@@ -66,6 +69,9 @@ export function EyeTracker() {
 
       {/* Settings Panel */}
       <SettingsPanel isOpen={showSettings} onClose={() => setShowSettings(false)} />
+
+      {/* 360° View Panel */}
+      <View360Panel isOpen={is360ViewOpen} onClose={() => set360ViewOpen(false)} />
 
       {/* Header */}
       <header className="relative z-30 border-b border-[var(--glass-border)]">
@@ -151,6 +157,15 @@ export function EyeTracker() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                   <span className="hidden sm:inline">Reset Zoom</span>
+                </Button>
+              )}
+
+              {hasImage && (
+                <Button variant="secondary" size="sm" onClick={() => set360ViewOpen(true)}>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span className="hidden sm:inline">360° View</span>
                 </Button>
               )}
 

@@ -130,3 +130,53 @@ export async function chatAboutImage(
     return null;
   }
 }
+
+// 360° View Generation with Gemini 3
+
+export interface View360 {
+  angle: number;
+  label: string;
+  image: string;
+}
+
+export interface Generate360Result {
+  success: boolean;
+  description: string;
+  views: View360[];
+  totalGenerated: number;
+}
+
+export async function generate360Views(
+  imageDataUrl: string,
+  numberOfAngles: number = 8
+): Promise<Generate360Result | null> {
+  try {
+    const response = await fetch('/api/generate-360', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        image: imageDataUrl,
+        angles: numberOfAngles,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Generate 360 API error:', response.status);
+      return null;
+    }
+
+    const result = await response.json();
+
+    if (result.error) {
+      console.error('Generate 360 error:', result.error);
+      return null;
+    }
+
+    return result as Generate360Result;
+  } catch (error) {
+    console.error('Failed to generate 360 views:', error);
+    return null;
+  }
+}

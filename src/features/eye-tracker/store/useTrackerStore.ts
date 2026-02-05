@@ -102,6 +102,9 @@ interface TrackerState {
   // NEW: Export
   exportFormat: 'png' | 'jpg' | 'pdf';
 
+  // NEW: 360° View
+  is360ViewOpen: boolean;
+
   // Actions
   setStatus: (status: TrackingStatus) => void;
   setPointer: (pointer: Point2D | null) => void;
@@ -182,6 +185,9 @@ interface TrackerState {
   // NEW: Export actions
   setExportFormat: (format: 'png' | 'jpg' | 'pdf') => void;
 
+  // NEW: 360° View actions
+  set360ViewOpen: (isOpen: boolean) => void;
+
   reset: () => void;
 }
 
@@ -240,6 +246,7 @@ const initialState = {
   isAnnotating: false,
   annotationColor: '#6366f1',
   exportFormat: 'png' as const,
+  is360ViewOpen: false,
 };
 
 export const useTrackerStore = create<TrackerState>()(
@@ -434,6 +441,9 @@ export const useTrackerStore = create<TrackerState>()(
 
       // NEW: Export
       setExportFormat: (format) => set({ exportFormat: format }),
+
+      // NEW: 360° View
+      set360ViewOpen: (isOpen) => set({ is360ViewOpen: isOpen }),
 
       reset: () => set({
         ...initialState,
