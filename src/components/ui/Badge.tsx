@@ -20,12 +20,12 @@ const statusConfig = {
   loading: {
     className: 'badge badge-warning',
     dotColor: 'bg-[var(--accent-warning)]',
-    label: 'Memuat...',
+    label: 'Loading...',
   },
   active: {
     className: 'badge badge-success',
     dotColor: 'bg-[var(--accent-success)]',
-    label: 'Aktif',
+    label: 'Active',
   },
   error: {
     className: 'badge badge-danger',
@@ -35,12 +35,12 @@ const statusConfig = {
   success: {
     className: 'badge badge-success',
     dotColor: 'bg-[var(--accent-success)]',
-    label: 'Sukses',
+    label: 'Success',
   },
   warning: {
     className: 'badge badge-warning',
     dotColor: 'bg-[var(--accent-warning)]',
-    label: 'Peringatan',
+    label: 'Warning',
   },
   info: {
     className: 'badge badge-info',

@@ -2,19 +2,22 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { useTrackerStore } from '../store/useTrackerStore';
+import { useThemeStore } from '../store/useThemeStore';
 import { Button } from '@/components/ui/Button';
 
 export function ImageUploader() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { setUploadedImage } = useTrackerStore();
+  const { setUploadedImage, history, loadFromHistory, clearHistory } = useTrackerStore();
+  const { resolvedTheme, toggleTheme } = useThemeStore();
   const [isDragging, setIsDragging] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      alert('Silakan pilih file gambar');
+      alert('Please select an image file');
       return;
     }
 
@@ -64,8 +67,8 @@ export function ImageUploader() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
         </svg>
       ),
-      title: 'Kontrol Gestur',
-      desc: 'Gunakan gerakan tangan sebagai pointer',
+      title: 'Gesture Control',
+      desc: 'Use hand movements as your pointer',
       gradient: 'from-violet-500 to-purple-500',
     },
     {
@@ -74,8 +77,8 @@ export function ImageUploader() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
         </svg>
       ),
-      title: 'AI Gemini',
-      desc: 'Deteksi & jelaskan objek dengan AI',
+      title: 'Gemini AI',
+      desc: 'Detect & explain objects with AI',
       gradient: 'from-cyan-500 to-blue-500',
     },
     {
@@ -84,8 +87,8 @@ export function ImageUploader() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
         </svg>
       ),
-      title: 'Narasi Suara',
-      desc: 'AI membacakan deskripsi otomatis',
+      title: 'Voice Narration',
+      desc: 'AI reads descriptions automatically',
       gradient: 'from-emerald-500 to-teal-500',
     },
     {
@@ -94,20 +97,96 @@ export function ImageUploader() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
         </svg>
       ),
-      title: 'Aksesibilitas',
-      desc: 'Dirancang untuk semua kemampuan',
+      title: 'Accessibility',
+      desc: 'Designed for all abilities',
       gradient: 'from-pink-500 to-rose-500',
     },
   ];
 
   const steps = [
-    { num: '01', title: 'Upload', desc: 'Pilih gambar yang ingin dijelajahi', icon: '📤' },
-    { num: '02', title: 'Arahkan', desc: 'Gunakan tangan untuk menunjuk objek', icon: '👆' },
-    { num: '03', title: 'Jelajahi', desc: 'AI akan menjelaskan setiap objek', icon: '✨' },
+    { num: '01', title: 'Upload', desc: 'Choose an image to explore', icon: '📤' },
+    { num: '02', title: 'Point', desc: 'Use your hand to point at objects', icon: '👆' },
+    { num: '03', title: 'Explore', desc: 'AI explains every object', icon: '✨' },
   ];
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-full p-6 md:p-8 overflow-hidden">
+      {/* Theme toggle */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-4 right-4 z-20 glass-card-static p-3 hover:bg-[var(--glass-bg-hover)] transition-all"
+        title={resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      >
+        {resolvedTheme === 'dark' ? (
+          <svg className="w-5 h-5 text-[var(--accent-warning)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        ) : (
+          <svg className="w-5 h-5 text-[var(--accent-tertiary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        )}
+      </button>
+
+      {/* History toggle */}
+      {history.length > 0 && (
+        <button
+          onClick={() => setShowHistory(!showHistory)}
+          className="absolute top-4 left-4 z-20 glass-card-static px-4 py-2 flex items-center gap-2 hover:bg-[var(--glass-bg-hover)] transition-all"
+        >
+          <svg className="w-5 h-5 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="text-sm text-[var(--text-secondary)]">History ({history.length})</span>
+        </button>
+      )}
+
+      {/* History panel */}
+      {showHistory && history.length > 0 && (
+        <div className="absolute top-16 left-4 z-30 animate-fade-in-down">
+          <div className="glass-card-static p-4 w-72">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-semibold text-[var(--text-primary)]">Recent Images</h4>
+              <button
+                onClick={() => {
+                  clearHistory();
+                  setShowHistory(false);
+                }}
+                className="text-xs text-[var(--text-tertiary)] hover:text-[var(--accent-danger)]"
+              >
+                Clear All
+              </button>
+            </div>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {history.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    loadFromHistory(item.id);
+                    setShowHistory(false);
+                  }}
+                  className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-[var(--glass-bg-hover)] transition-colors"
+                >
+                  <img
+                    src={item.thumbnail}
+                    alt="History"
+                    className="w-12 h-12 rounded-lg object-cover"
+                  />
+                  <div className="flex-1 text-left">
+                    <p className="text-xs text-[var(--text-primary)] truncate">
+                      {item.analysis?.summary?.slice(0, 30) || 'Image'}...
+                    </p>
+                    <p className="text-[10px] text-[var(--text-tertiary)]">
+                      {new Date(item.timestamp).toLocaleDateString()}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Animated background orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -left-40 w-80 h-80 bg-[var(--accent-primary)]/20 rounded-full blur-[100px] animate-float" />
@@ -134,7 +213,7 @@ export function ImageUploader() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent-success)]" />
             </span>
             <span className="text-sm font-medium text-[var(--text-secondary)]">
-              Powered by Google Gemini
+              Powered by Google Gemini AI
             </span>
           </div>
 
@@ -144,12 +223,12 @@ export function ImageUploader() {
           </h1>
 
           <p className="text-lg md:text-xl text-[var(--text-secondary)] mb-2 font-medium">
-            Kontrol Gestur Berbasis AI
+            AI-Powered Gesture Control
           </p>
 
           <p className="text-[var(--text-tertiary)] max-w-lg mx-auto text-sm md:text-base">
-            Jelajahi dan berinteraksi dengan gambar menggunakan gerakan tangan.
-            AI akan menjelaskan setiap objek yang Anda tunjuk.
+            Explore and interact with images using hand gestures.
+            AI will explain every object you point at.
           </p>
         </div>
 
@@ -224,22 +303,22 @@ export function ImageUploader() {
               </div>
 
               <h2 className="text-xl md:text-2xl font-semibold text-[var(--text-primary)] mb-2">
-                {isDragging ? 'Lepaskan untuk upload' : 'Upload Gambar'}
+                {isDragging ? 'Drop to upload' : 'Upload Image'}
               </h2>
 
               <p className="text-[var(--text-tertiary)] mb-6 text-sm">
-                Drag & drop atau klik untuk memilih file
+                Drag & drop or click to select a file
               </p>
 
               <Button variant="primary" size="lg">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                Pilih Gambar
+                Choose Image
               </Button>
 
               <p className="text-[var(--text-muted)] text-xs mt-4">
-                Mendukung JPG, PNG, WebP hingga 10MB
+                Supports JPG, PNG, WebP up to 10MB
               </p>
             </div>
 
@@ -281,7 +360,7 @@ export function ImageUploader() {
         {/* How it works */}
         <div className="mt-12 animate-fade-in-up stagger-3">
           <h2 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] text-center mb-8">
-            Cara Kerja
+            How It Works
           </h2>
 
           <div className="flex flex-col md:flex-row items-stretch justify-center gap-4">
@@ -330,12 +409,12 @@ export function ImageUploader() {
               </div>
               <div>
                 <h3 className="text-base font-semibold text-[var(--text-primary)] mb-2">
-                  Dirancang untuk Aksesibilitas
+                  Designed for Accessibility
                 </h3>
                 <p className="text-sm text-[var(--text-tertiary)] leading-relaxed">
-                  Gestour membantu pengguna dengan keterbatasan motorik untuk mengeksplorasi
-                  dan berinteraksi dengan konten visual tanpa memerlukan mouse atau keyboard.
-                  Fitur narasi suara membantu pengguna dengan keterbatasan penglihatan.
+                  Gestour helps users with motor disabilities explore and interact
+                  with visual content without needing a mouse or keyboard.
+                  Voice narration assists users with visual impairments.
                 </p>
               </div>
             </div>

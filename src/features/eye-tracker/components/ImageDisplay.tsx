@@ -107,12 +107,12 @@ export function ImageDisplay() {
   const pointerStyle = getPointerStyle();
 
   const gestures = [
-    { icon: '☝️', name: 'Telunjuk', action: 'Pointer', color: 'text-[var(--text-primary)]' },
-    { icon: '👍', name: 'Jempol', action: 'Deteksi AI', color: 'text-[var(--accent-success)]' },
-    { icon: '🤟', name: '3 Jari', action: 'Analisis Full', color: 'text-pink-400' },
-    { icon: '🤏', name: 'Pinch', action: 'Klik', color: 'text-[var(--accent-primary)]' },
-    { icon: '✊', name: 'Kepalan', action: 'Zoom+', color: 'text-[var(--accent-secondary)]' },
-    { icon: '🖐️', name: 'Telapak', action: 'Zoom-', color: 'text-[var(--accent-warning)]' },
+    { icon: '☝️', name: 'Index', action: 'Pointer', color: 'text-[var(--text-primary)]' },
+    { icon: '👍', name: 'Thumb Up', action: 'AI Detect', color: 'text-[var(--accent-success)]' },
+    { icon: '🤟', name: '3 Fingers', action: 'Full Analysis', color: 'text-pink-400' },
+    { icon: '🤏', name: 'Pinch', action: 'Click', color: 'text-[var(--accent-primary)]' },
+    { icon: '✊', name: 'Fist', action: 'Zoom+', color: 'text-[var(--accent-secondary)]' },
+    { icon: '🖐️', name: 'Palm', action: 'Zoom-', color: 'text-[var(--accent-warning)]' },
     { icon: '✌️', name: 'Peace', action: 'Drag', color: 'text-[var(--accent-tertiary)]' },
   ];
 
@@ -185,8 +185,8 @@ export function ImageDisplay() {
               <div className="absolute inset-0 w-10 h-10 rounded-full border-2 border-[var(--accent-success)] border-t-transparent animate-spin" />
             </div>
             <div>
-              <p className="text-[var(--text-primary)] font-medium">Menganalisis objek...</p>
-              <p className="text-[var(--text-tertiary)] text-sm">AI sedang memproses</p>
+              <p className="text-[var(--text-primary)] font-medium">Analyzing object...</p>
+              <p className="text-[var(--text-tertiary)] text-sm">AI is processing</p>
             </div>
           </div>
         </div>
@@ -201,8 +201,8 @@ export function ImageDisplay() {
               <div className="absolute inset-0 w-10 h-10 rounded-full border-2 border-pink-500 border-t-transparent animate-spin" />
             </div>
             <div>
-              <p className="text-[var(--text-primary)] font-medium">Menganalisis gambar...</p>
-              <p className="text-[var(--text-tertiary)] text-sm">Mendeteksi semua objek</p>
+              <p className="text-[var(--text-primary)] font-medium">Analyzing image...</p>
+              <p className="text-[var(--text-tertiary)] text-sm">Detecting all objects</p>
             </div>
           </div>
         </div>
@@ -223,7 +223,7 @@ export function ImageDisplay() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <span className="text-sm font-medium text-[var(--text-secondary)]">Objek Terdeteksi</span>
+                <span className="text-sm font-medium text-[var(--text-secondary)]">Object Detected</span>
               </div>
               <button className="w-6 h-6 rounded-md hover:bg-[var(--glass-bg)] flex items-center justify-center text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -255,7 +255,7 @@ export function ImageDisplay() {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-[var(--accent-warning)] mb-1">Fakta Menarik</p>
+                      <p className="text-xs font-semibold text-[var(--accent-warning)] mb-1">Fun Fact</p>
                       <p className="text-sm text-[var(--text-secondary)]">{detection.funFact}</p>
                     </div>
                   </div>
@@ -271,7 +271,7 @@ export function ImageDisplay() {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-[var(--accent-secondary)] mb-1">Info Tambahan</p>
+                      <p className="text-xs font-semibold text-[var(--accent-secondary)] mb-1">Additional Info</p>
                       <p className="text-sm text-[var(--text-secondary)]">{detection.relatedInfo}</p>
                     </div>
                   </div>
@@ -284,14 +284,14 @@ export function ImageDisplay() {
                   detection.confidence === 'high' ? 'badge-success' :
                   detection.confidence === 'medium' ? 'badge-warning' : 'badge-danger'
                 }`}>
-                  {detection.confidence === 'high' ? 'Tinggi' :
-                   detection.confidence === 'medium' ? 'Sedang' : 'Rendah'}
+                  {detection.confidence === 'high' ? 'High' :
+                   detection.confidence === 'medium' ? 'Medium' : 'Low'}
                 </span>
               </div>
             </div>
 
             <div className="px-5 py-2 bg-[var(--bg-secondary)]/50 text-center">
-              <p className="text-xs text-[var(--text-muted)]">Klik untuk menutup</p>
+              <p className="text-xs text-[var(--text-muted)]">Click to close</p>
             </div>
           </div>
         </div>
@@ -302,7 +302,7 @@ export function ImageDisplay() {
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 animate-bounce">
           <div className="glass-card-static px-6 py-3 flex items-center gap-3">
             <span className="text-2xl">👋</span>
-            <p className="text-[var(--text-secondary)] text-sm">Tunjukkan tangan ke kamera</p>
+            <p className="text-[var(--text-secondary)] text-sm">Show your hand to the camera</p>
           </div>
         </div>
       )}
@@ -337,7 +337,7 @@ export function ImageDisplay() {
           </svg>
         )}
         <span className={`text-xs font-medium ${voiceEnabled ? 'text-[var(--accent-success)]' : 'text-[var(--text-tertiary)]'}`}>
-          {voiceEnabled ? 'Suara ON' : 'Suara OFF'}
+          {voiceEnabled ? 'Voice ON' : 'Voice OFF'}
         </span>
       </button>
 
@@ -401,12 +401,12 @@ export function ImageDisplay() {
                      gesture === 'thumbsUp' ? 'var(--accent-success)' :
                      gesture === 'threeFingers' ? '#ec4899' : 'var(--text-primary)'
             }}>
-              {gesture === 'pinch' && 'Klik!'}
+              {gesture === 'pinch' && 'Click!'}
               {gesture === 'fist' && 'Zoom In'}
               {gesture === 'open' && 'Zoom Out'}
               {gesture === 'peace' && 'Dragging...'}
-              {gesture === 'thumbsUp' && 'Deteksi AI...'}
-              {gesture === 'threeFingers' && 'Menganalisis...'}
+              {gesture === 'thumbsUp' && 'AI Detecting...'}
+              {gesture === 'threeFingers' && 'Analyzing...'}
             </span>
           </div>
         </div>

@@ -257,14 +257,14 @@ export function CameraPreview() {
   const isLoading = status === 'loading';
 
   const gestureInfo: Record<GestureType, { label: string; color: string; icon: string }> = {
-    none: { label: 'Tidak dikenali', color: 'text-[var(--text-tertiary)]', icon: '❓' },
+    none: { label: 'Not recognized', color: 'text-[var(--text-tertiary)]', icon: '❓' },
     point: { label: 'Point', color: 'text-[var(--text-primary)]', icon: '☝️' },
-    pinch: { label: 'Klik!', color: 'text-[var(--accent-primary)]', icon: '🤏' },
+    pinch: { label: 'Click!', color: 'text-[var(--accent-primary)]', icon: '🤏' },
     fist: { label: 'Zoom In', color: 'text-[var(--accent-secondary)]', icon: '✊' },
     open: { label: 'Zoom Out', color: 'text-[var(--accent-warning)]', icon: '🖐️' },
     peace: { label: 'Drag', color: 'text-[var(--accent-tertiary)]', icon: '✌️' },
-    thumbsUp: { label: 'Deteksi AI', color: 'text-[var(--accent-success)]', icon: '👍' },
-    threeFingers: { label: 'Analisis', color: 'text-pink-400', icon: '🔍' },
+    thumbsUp: { label: 'AI Detect', color: 'text-[var(--accent-success)]', icon: '👍' },
+    threeFingers: { label: 'Analyze', color: 'text-pink-400', icon: '🔍' },
   };
 
   const currentGestureInfo = gestureInfo[gesture] || gestureInfo.none;
@@ -307,7 +307,7 @@ export function CameraPreview() {
               <div className="w-10 h-10 rounded-full border-2 border-[var(--accent-primary)]/30" />
               <div className="absolute inset-0 w-10 h-10 rounded-full border-2 border-[var(--accent-primary)] border-t-transparent animate-spin" />
             </div>
-            <p className="text-xs text-[var(--text-secondary)]">Memuat kamera...</p>
+            <p className="text-xs text-[var(--text-secondary)]">Loading camera...</p>
           </div>
         )}
 
@@ -384,8 +384,8 @@ export function CameraPreview() {
                 }`} />
               </span>
               <span className="text-[10px] text-[var(--text-secondary)]">
-                {status === 'active' ? 'Kamera aktif' :
-                 status === 'loading' ? 'Memuat...' : 'Tidak aktif'}
+                {status === 'active' ? 'Camera active' :
+                 status === 'loading' ? 'Loading...' : 'Inactive'}
               </span>
             </div>
           </div>

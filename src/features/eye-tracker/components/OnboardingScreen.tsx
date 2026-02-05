@@ -11,49 +11,49 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
 
   const steps = [
     {
-      icon: '🤖',
-      title: 'Selamat Datang di HandsFree AI',
-      subtitle: 'Aksesibilitas Tanpa Batas',
-      description: 'Kontrol komputer dan eksplorasi gambar hanya dengan gerakan tangan. Ditenagai oleh Google Gemini 3 AI.',
+      icon: '👋',
+      title: 'Welcome to Gestour',
+      subtitle: 'Hands-Free Navigation',
+      description: 'Control your screen and explore images using just hand gestures. Powered by Google Gemini AI for intelligent object detection.',
       features: [
-        '✓ Tanpa sentuh layar atau mouse',
-        '✓ AI menjelaskan objek dengan suara',
-        '✓ Ramah untuk semua kemampuan',
+        '✓ No mouse or touch needed',
+        '✓ AI describes objects with voice',
+        '✓ Built for all abilities',
       ],
     },
     {
       icon: '👆',
-      title: 'Gerakan Dasar',
-      subtitle: 'Mudah dipelajari',
-      description: 'Gunakan gerakan tangan intuitif untuk mengontrol pointer dan berinteraksi.',
+      title: 'Basic Gestures',
+      subtitle: 'Easy to Learn',
+      description: 'Use intuitive hand gestures to control the pointer and interact with content.',
       gestures: [
-        { emoji: '☝️', name: 'Telunjuk', action: 'Gerakkan pointer' },
-        { emoji: '👍', name: 'Jempol', action: 'Deteksi AI + Suara' },
-        { emoji: '🤏', name: 'Pinch', action: 'Klik' },
-        { emoji: '✌️', name: 'Peace', action: 'Drag/Geser' },
+        { emoji: '☝️', name: 'Point', action: 'Move cursor' },
+        { emoji: '👍', name: 'Thumbs Up', action: 'AI Detection + Voice' },
+        { emoji: '🤏', name: 'Pinch', action: 'Click action' },
+        { emoji: '✌️', name: 'Peace', action: 'Drag / Pan' },
       ],
     },
     {
       icon: '🔍',
-      title: 'Zoom & Navigasi',
-      subtitle: 'Jelajahi dengan mudah',
-      description: 'Perbesar gambar dan navigasi dengan gerakan natural.',
+      title: 'Zoom & Navigation',
+      subtitle: 'Explore Freely',
+      description: 'Zoom in/out and navigate images with natural hand movements.',
       gestures: [
-        { emoji: '✊', name: 'Kepalan', action: 'Zoom In' },
-        { emoji: '🖐️', name: 'Telapak', action: 'Zoom Out' },
-        { emoji: '🤟', name: '3 Jari', action: 'Analisis Full AI' },
+        { emoji: '✊', name: 'Fist', action: 'Zoom In' },
+        { emoji: '🖐️', name: 'Open Hand', action: 'Zoom Out' },
+        { emoji: '🤟', name: 'Three Fingers', action: 'Full AI Analysis' },
       ],
     },
     {
       icon: '♿',
-      title: 'Fitur Aksesibilitas',
-      subtitle: 'Dirancang untuk semua orang',
-      description: 'HandsFree AI dirancang khusus untuk pengguna dengan berbagai kebutuhan aksesibilitas.',
+      title: 'Accessibility Features',
+      subtitle: 'Designed for Everyone',
+      description: 'Gestour is specially designed for users with various accessibility needs.',
       features: [
-        '🔊 Narasi suara otomatis',
-        '⏱️ Dwell Click untuk tremor',
-        '🎯 Sensitivitas dapat disesuaikan',
-        '💬 Tanya AI tentang apapun',
+        '🔊 Automatic voice narration',
+        '⏱️ Dwell click for tremor support',
+        '🎯 Adjustable sensitivity',
+        '💬 Ask AI anything about the image',
       ],
     },
   ];
@@ -62,12 +62,15 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
   const isLastStep = step === steps.length - 1;
 
   return (
-    <div className="fixed inset-0 z-50 bg-gradient-to-br from-[#0a0a0a] via-[#1a1a2e] to-[#16213e] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Background */}
+      <div className="absolute inset-0 bg-[var(--bg-primary)]" />
+
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[var(--accent-primary)]/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[var(--accent-tertiary)]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--accent-success)]/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative max-w-2xl w-full">
@@ -78,30 +81,30 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
               key={i}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 i === step
-                  ? 'w-8 bg-gradient-to-r from-blue-400 to-purple-400'
+                  ? 'w-8 bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-tertiary)]'
                   : i < step
-                  ? 'w-4 bg-blue-400/50'
-                  : 'w-4 bg-white/20'
+                  ? 'w-4 bg-[var(--accent-primary)]/50'
+                  : 'w-4 bg-[var(--glass-border)]'
               }`}
             />
           ))}
         </div>
 
         {/* Card */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+        <div className="glass-card-static p-8">
           {/* Icon */}
           <div className="text-center mb-6">
             <span className="text-7xl">{currentStep.icon}</span>
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl font-bold text-white text-center mb-2">
+          <h1 className="text-3xl font-bold text-[var(--text-primary)] text-center mb-2">
             {currentStep.title}
           </h1>
-          <p className="text-lg text-blue-400 text-center mb-4">
+          <p className="text-lg text-[var(--accent-primary)] text-center mb-4">
             {currentStep.subtitle}
           </p>
-          <p className="text-gray-400 text-center mb-8">
+          <p className="text-[var(--text-secondary)] text-center mb-8">
             {currentStep.description}
           </p>
 
@@ -111,10 +114,10 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
               {currentStep.features.map((feature, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 p-3 bg-white/5 rounded-xl"
+                  className="flex items-center gap-3 p-3 bg-[var(--glass-bg)] rounded-xl"
                 >
                   <span className="text-lg">{feature.split(' ')[0]}</span>
-                  <span className="text-gray-300">{feature.substring(feature.indexOf(' ') + 1)}</span>
+                  <span className="text-[var(--text-secondary)]">{feature.substring(feature.indexOf(' ') + 1)}</span>
                 </div>
               ))}
             </div>
@@ -125,12 +128,12 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
               {currentStep.gestures.map((g, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 p-3 bg-white/5 rounded-xl"
+                  className="flex items-center gap-3 p-3 bg-[var(--glass-bg)] rounded-xl"
                 >
                   <span className="text-2xl">{g.emoji}</span>
                   <div>
-                    <p className="text-white font-medium">{g.name}</p>
-                    <p className="text-sm text-gray-400">{g.action}</p>
+                    <p className="text-[var(--text-primary)] font-medium">{g.name}</p>
+                    <p className="text-sm text-[var(--text-tertiary)]">{g.action}</p>
                   </div>
                 </div>
               ))}
@@ -141,11 +144,11 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
           <div className="flex items-center justify-between">
             <button
               onClick={() => setStep(Math.max(0, step - 1))}
-              className={`px-6 py-2 rounded-xl text-gray-400 hover:text-white transition-colors ${
+              className={`px-6 py-2 rounded-xl text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors ${
                 step === 0 ? 'invisible' : ''
               }`}
             >
-              ← Kembali
+              ← Back
             </button>
 
             <button
@@ -156,9 +159,9 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
                   setStep(step + 1);
                 }
               }}
-              className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-blue-500/25"
+              className="px-8 py-3 bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-tertiary)] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-lg"
             >
-              {isLastStep ? 'Mulai Sekarang →' : 'Lanjut →'}
+              {isLastStep ? 'Get Started →' : 'Next →'}
             </button>
           </div>
         </div>
@@ -166,14 +169,14 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
         {/* Skip button */}
         <button
           onClick={onComplete}
-          className="absolute -bottom-12 left-1/2 -translate-x-1/2 text-gray-500 hover:text-gray-300 text-sm transition-colors"
+          className="absolute -bottom-12 left-1/2 -translate-x-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-sm transition-colors"
         >
-          Lewati Tutorial
+          Skip Tutorial
         </button>
 
         {/* Gemini badge */}
-        <div className="absolute -top-4 right-4 px-4 py-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-full">
-          <span className="text-sm text-blue-300">✨ Powered by Gemini 3</span>
+        <div className="absolute -top-4 right-4 px-4 py-2 bg-gradient-to-r from-[var(--accent-primary)]/20 to-[var(--accent-tertiary)]/20 border border-[var(--accent-primary)]/30 rounded-full">
+          <span className="text-sm text-[var(--accent-primary-light)]">✨ Powered by Gemini AI</span>
         </div>
       </div>
     </div>

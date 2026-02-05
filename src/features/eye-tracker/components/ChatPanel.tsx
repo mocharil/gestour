@@ -51,20 +51,20 @@ export function ChatPanel() {
           speak(answer);
         }
       } else {
-        addChatMessage({ role: 'assistant', content: 'Maaf, saya tidak bisa menjawab pertanyaan itu.' });
+        addChatMessage({ role: 'assistant', content: 'Sorry, I couldn\'t answer that question.' });
       }
     } catch {
-      addChatMessage({ role: 'assistant', content: 'Terjadi kesalahan. Silakan coba lagi.' });
+      addChatMessage({ role: 'assistant', content: 'An error occurred. Please try again.' });
     } finally {
       setChatLoading(false);
     }
   };
 
   const quickQuestions = [
-    'Apa yang ada di gambar ini?',
-    'Jelaskan lebih detail',
-    'Ada berapa objek?',
-    'Warna apa yang dominan?',
+    'What\'s in this image?',
+    'Describe in detail',
+    'How many objects?',
+    'What colors dominate?',
   ];
 
   if (!isChatOpen) {
@@ -82,7 +82,7 @@ export function ChatPanel() {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-            <span className="font-semibold">Tanya AI</span>
+            <span className="font-semibold">Ask AI</span>
           </div>
         </div>
       </button>
@@ -101,7 +101,7 @@ export function ChatPanel() {
               </svg>
             </div>
             <div>
-              <h3 className="font-semibold text-[var(--text-primary)]">Tanya AI</h3>
+              <h3 className="font-semibold text-[var(--text-primary)]">Ask AI</h3>
               <p className="text-xs text-[var(--text-tertiary)]">Powered by Gemini</p>
             </div>
           </div>
@@ -109,7 +109,7 @@ export function ChatPanel() {
             <button
               onClick={clearChat}
               className="p-2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-bg)] rounded-lg transition-colors"
-              title="Hapus chat"
+              title="Clear chat"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -138,7 +138,7 @@ export function ChatPanel() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
                 </svg>
               </div>
-              <p className="text-[var(--text-secondary)] mb-4">Tanyakan apapun tentang gambar ini!</p>
+              <p className="text-[var(--text-secondary)] mb-4">Ask anything about this image!</p>
               <div className="flex flex-wrap gap-2 justify-center">
                 {quickQuestions.map((q, i) => (
                   <button
@@ -191,7 +191,7 @@ export function ChatPanel() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ketik pertanyaan..."
+              placeholder="Type your question..."
               className="glass-input flex-1 rounded-xl"
               disabled={isChatLoading}
             />
